@@ -5,13 +5,15 @@
   Alberto Harres
 ---------------------------------------------------------------- */
 
-int w = 600; // image width
-int h = 600; // image height
+int w = 800; // image width
+int h = 800; // image height
 
-int squareSize = 2; // size of each square in grid
+int squareSize = 4; // size of each square in grid
 
 int cols = w/squareSize;
 int rows = h/squareSize;
+
+boolean run = true;
 
 // number of squares in images
 int [][] matrix = new int[cols][rows];
@@ -20,7 +22,7 @@ int [][] matrix = new int[cols][rows];
 int pCalc = 4;
 
 void setup () {
-  size(600, 600);
+  size(800,800);
   noStroke();
   // frameRate(1);
   for (int y = 0; y < cols; y++) {
@@ -35,6 +37,15 @@ void setup () {
 void initialShape () {
   matrix[floor(random(cols))][floor(random(rows))] = 255;
 
+}
+
+void reset () {
+   for (int y = 0; y < cols; y++) {
+    for (int x = 0; x < rows; x++) {
+      matrix[y][x] = 0;
+    }
+   }
+   initialShape();
 }
 
 void draw(){
@@ -53,11 +64,11 @@ void draw(){
       rect(x*squareSize, y*squareSize, squareSize, squareSize);
     }
   }
-  calculate();
+  if (run) calculate();
   if (frameCount % 2 == 0) {
     // saveFrame("frame-####.tiff");
   }
-  pCalc = ceil(float(1+mouseX)/(w/60));
+  // pCalc = ceil(float(1+mouseX)/(w/60));
   println("pCalc", pCalc);
 }
 
@@ -70,10 +81,10 @@ void calculate () {
       // add probably of x and y axis
       int prob = calculateProb(x, y);
 
-      if (prev_color > 100) { // if its black
+      if (prev_color == 255) { // if its black
         for (int ky = -1; ky <= 1; ky++) {
           for (int kx = -1; kx <= 1; kx++) {
-            matrix[y+ky][x+kx] = int(random(100)) % prob * (matrix[y+ky][x+kx] + 100);
+            matrix[y+ky][x+kx] = int(random(100)) % prob * 255;
           }
         }
         new_color = prev_color / 2;
@@ -136,6 +147,11 @@ int calculateProb (int x, int y) {
 }
 
 void keyPressed() {
-  calculate();
-  initialShape();
+  if (key == 'c') calculate();
+  if (key == 'r') initialShape();
+  if (key == 'w') pCalc++;
+  if (key == 's' && pCalc > 2) pCalc--;
+  if (key == 'p') run = !run;
+  if (key == 'q') reset();
+  // initialShape();
 }
