@@ -15,8 +15,11 @@ int rows = h/squareSize;
 
 boolean run = true;
 
+float hue;
+
 // number of squares in images
 int [][] matrix = new int[cols][rows];
+float [][] matrix_hue = new float[cols][rows];
 
 // multiplies values to be used in % molude to make a probability 
 int pCalc = 4;
@@ -31,10 +34,13 @@ void setup () {
       matrix[y][x] = c;
     }
   }
-  initialShape();
+  //initialShape();
+  colorMode(HSB, 360, 100, 255);
+  reset();
 }
 
 void initialShape () {
+  hue = random(360);
   matrix[floor(random(cols))][floor(random(rows))] = 255;
 
 }
@@ -43,23 +49,32 @@ void reset () {
    for (int y = 0; y < cols; y++) {
     for (int x = 0; x < rows; x++) {
       matrix[y][x] = 0;
+      matrix_hue[y][x] = hue;
     }
-   }
-   initialShape();
+  }
+  initialShape();
 }
 
 void draw(){
+
   for (int y = 0; y < cols; y++) {
     for (int x = 0; x < rows; x++) {
       color c = matrix[y][x];
-      fill(c); 
-      // if (c == 255){
+      
+      fill(matrix_hue[y][x] % 360,80, c); 
+      
       boolean hasN = hasWhiteNeigbors(x, y);
       if (hasN) {
         if (c == 0) {
-          fill(0, 0, 255);
+          fill(360-matrix_hue[y][x], 80, 100);
+          matrix_hue[y][x] = (matrix_hue[y][x] + random(1, 2)) % 360;
+        } else {
+          matrix_hue[y][x] = (matrix_hue[y][x] - random(1, calculateProb(x, y))) % 360 ; 
         }
       }
+
+      // matrix_hue[y][x] = hue;
+      
       // }
       rect(x*squareSize, y*squareSize, squareSize, squareSize);
     }
